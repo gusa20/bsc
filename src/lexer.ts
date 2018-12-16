@@ -8,8 +8,8 @@ export class Lexer {
   static readonly Int = /^\d+/;
   static readonly Num = /^(\d+(\.\d*)?|\.\d+)((E)?[+-]\d+)?/;
   static readonly Composite = /^<>|>=|<=|==/;
-  static readonly Special = /[@~`!@#$%^&*()_=+\\';:"\/?>.<,-|]/;
-  static readonly Word = new RegExp("[a-zA-Z](\w|" + Lexer.Special.source + ")+");
+  static readonly Special = /[@~`!@#$%^&*()=+\\';:"\/?>.<,-|]/;
+  static readonly Word = new RegExp("^[a-zA-Z](\w|" + Lexer.Special.source + ")+");
   static readonly Character = Lexer.Letter + "|" + Lexer.Digit + "|" + Lexer.Special;
   static readonly Whitespace = /^\s+/;
 
@@ -84,8 +84,7 @@ export class Lexer {
                            new Word("REM"))]
 
 
-  public scan = () => {
-    var s = fs.readFileSync("resources/bubble-simple.b", 'utf8');
+  public scan = (s : string) => {
     s= this.stripWhitespace(s);
     let maybeComposite = this.ScanComposite(s);
     if (maybeComposite.token != undefined){
@@ -99,7 +98,7 @@ export class Lexer {
     if (maybeWord.token != undefined){
       return maybeWord;
     }
-    return this.ScanDefault(s);
+    if (s != "") return this.ScanDefault(s);
+    else return null;
   };
-
 }

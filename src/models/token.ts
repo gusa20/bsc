@@ -4,7 +4,6 @@ export interface IToken {
 export class Token implements IToken {
   constructor(value : string){
     this.value = value;
-    console.log(`"created token: ${this.toString()}"`);
   }
 
   value: string;
@@ -18,7 +17,6 @@ export class Token implements IToken {
 export class Word implements IToken {
   constructor(lexeme : string){
     this.lexeme = lexeme;
-    console.log(`"created token: ${this.toString()}"`);
   }
 
   lexeme: string;
@@ -39,7 +37,6 @@ export class Word implements IToken {
 export class Num implements IToken {
   constructor(value : number){
     this.value = value;
-    console.log(`"created token: ${this.toString()}"`);
   }
 
   public toString = () : string => {

@@ -1,8 +1,32 @@
 import * as fs from 'fs'
 import { Token, Num, Word} from '../src/models/token';
+import {Lexer} from './lexer';
+import * as R from 'ramda';
 import { isNumber } from 'util';
 
 export class Parser {
+  private lexer : Lexer;
+
+  constructor(lexer : any){
+    this.lexer = lexer;
+  }
+
+  public parse (path : string) {
+    var str = fs.readFileSync("resources/bubble-simple.b", 'utf8');
+    do {
+      var result = this.lexer.scan(str);
+      if (result == null){
+        console.log("we are done here.");
+        return;
+      }
+      else {
+        console.log(result.token && result.token.toString());
+        let {s , token} = result;
+        str = s;
+      }
+    } while (1);
+  }
+
   private match(x : any) : boolean{
     return x;
   }
@@ -44,7 +68,7 @@ export class Parser {
             && this.Exp()
             && this.KleeneExp())){
       return true;
-      }
+    }
     else return false;
   }
 

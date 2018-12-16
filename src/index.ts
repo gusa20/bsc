@@ -1,4 +1,5 @@
 import {Command, flags} from '@oclif/command';
+import {Parser} from './parser'
 import {Lexer} from './lexer'
 
 class Bsc extends Command {
@@ -18,10 +19,8 @@ class Bsc extends Command {
 
   async run() {
     const {args, flags} = this.parse(Bsc)
-
-    const lexer = new Lexer();
-    var content = lexer.scan();
-    console.log(content);
+    let parser = new Parser(new Lexer());
+    parser.parse("resources/bubble-simple.b");
     const name = flags.name || 'world'
     this.log(`hello ${name} from ./src/index.ts`)
     if (args.file && flags.force) {
