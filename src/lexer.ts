@@ -18,11 +18,13 @@ export class Lexer {
   private ScanNum= (s: string) => {
     let ex = Lexer.Num.exec(s);
     if (ex == null){
-      return {s: s,
+      return {sTo: s,
+              sFrom: s,
               token: undefined};
     }
     else {
-      return {s: s.replace(Lexer.Num,""),
+      return {sTo: s.replace(Lexer.Num,""),
+              sFrom: s,
               token: new Num(Number(ex[0]))};
     }
   }
@@ -39,11 +41,13 @@ export class Lexer {
   private ScanComposite= (s: string) => {
     let ex = Lexer.Composite.exec(s);
     if (ex == null){
-      return {s: s,
+      return {sTo: s,
+              sFrom: s,
               token: undefined};
     }
     else {
-      return {s: s.replace(Lexer.Composite,""),
+      return {sTo: s.replace(Lexer.Composite,""),
+              sFrom: s,
               token: this.resolveComposite(ex[0])};
     }
   }
@@ -51,17 +55,20 @@ export class Lexer {
   private ScanWord= (s: string) => {
     let ex = Lexer.Word.exec(s);
     if (ex == null){
-      return {s: s,
+      return {sTo: s,
+              sFrom: s,
               token: undefined};
     }
     else {
-      return {s: s.replace(Lexer.Word,""),
+      return {sTo: s.replace(Lexer.Word,""),
+              sFrom: s,
               token: new Word(ex[0])};
     }
   }
 
   private ScanDefault= (s: string) => {
-    return {s: s.substring(1),
+    return {sTo: s.substring(1),
+            sFrom: s,
             token: new Token(s[0])};
   }
 

@@ -11,7 +11,7 @@ export class Parser {
     this.lexer = lexer;
   }
 
-  public parse (path : string) {
+  public scanAll (path : string){
     var str = fs.readFileSync("resources/bubble-simple.b", 'utf8');
     do {
       var result = this.lexer.scan(str);
@@ -21,10 +21,15 @@ export class Parser {
       }
       else {
         console.log(result.token && result.token.toString());
-        let {s , token} = result;
-        str = s;
+        let {sTo , sFrom, token} = result;
+        str = sTo;
       }
     } while (1);
+  }
+
+  public parse (path : string) {
+    var str = fs.readFileSync("resources/bubble-simple.b", 'utf8');
+    this.Program();
   }
 
   private match(x : any) : boolean{
