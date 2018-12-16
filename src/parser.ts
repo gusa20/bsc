@@ -28,29 +28,57 @@ export class Parser {
   }
 
   public parse (path : string) {
-    var str = fs.readFileSync("resources/bubble-simple.b", 'utf8');
-    this.Program();
+    this.source = fs.readFileSync("resources/bubble-simple.b", 'utf8');
+    return this.Program();
   }
+
+  private look : any;
+  private source : any;
 
   private match(x : any) : boolean{
     return x;
   }
 
+  public KleeneBStatement(){
+    console.log("[Start] {BStatement}");
+    while(1){
+      let backup = this.source;
+      let r = this.BStatement();
+      if (!r) {
+        console.log(`[Backtrack] BStatement`)
+        this.source = backup;
+        break;
+      }
+    };
+    console.log("[END] {BStatement}");
+  }
+
+  public EndOfFile() : boolean {
+    let x = this.lexer.scan(this.source) == null;
+    return x;
+  }
+
   public Program (){
-    this.BStatement();
-    while (this.BStatement()) continue;
-    this.Int();
-    this.match("END");
+    if (this.BStatement()){
+      this.KleeneBStatement();
+      let r = (this.Int() && this.match_("END", Word) && this.EndOfFile());
+      if (r){
+        console.log("[Production] Program -> BStatement {BStatement} int \"END\"");
+        return true;
+      } else {
+        return false;
+      }
+    }
   }
 
   public BStatement () : boolean{
-    this.Int();
-    if (! (this.Assign() || this.Read() || this.Data () || this.Print() || this.Goto() || this.If()
-           || this.For() || this.Next() || this.Dim() || this.Def() || this.Gosub() || this.Return() || this.Remark())){
-      throw new Error("Parsing failed at BSTatement");
-    };
-    this.match("END");
-    return false;
+    return (this.Int() && this.Remark());
+    // if (! (this.Assign() || this.Read() || this.Data () || this.Print() || this.Goto() || this.If()
+    //        || this.For() || this.Next() || this.Dim() || this.Def() || this.Gosub() || this.Return() || this.Remark())){
+    //   throw new Error("Parsing failed at BSTatement");
+    // };
+    // this.match("END");
+    // return false;
   }
 
   public Assign() : boolean {
@@ -86,7 +114,7 @@ export class Parser {
     else if (this.match("-") && this.Num()){
       return true;
     }
-    else throw new Error("Parsing failed at Snum");
+    else throw new Error("[Fail] SNum");
   }
 
   public Num (){
@@ -96,7 +124,17 @@ export class Parser {
   }
 
   public Int() : boolean {
-    return false;
+    let res = this.lexer.scan(this.source);
+    if (res == null) return false;
+    else {
+      let {sTo, token} = res;
+      if (token instanceof Num){
+        console.log(`[Accept] ${token}`);
+        this.source = sTo;
+        return true;
+      }
+      else return false;
+    }
   }
 
   public Digit() : boolean{
@@ -160,9 +198,45 @@ export class Parser {
     return this.Letter() || this.Digit() || this.Special();
   }
 
-  public Remark() : boolean {
-    this.match("REM");
-    while(this.Character()) continue;
+  public match_(s : string, t : any){
+    let scaned = this.lexer.scan(this.source);
+    if (scaned != null){
+      let {token} = scaned;
+      if (token && token instanceof t && token.getStr() == s){
+        console.log(`[Accept] ${token}`);
+        this.source = scaned.sTo;
+        return true;
+      } else return false;
+    } else return false;
+  }
+
+  public match_except(s : string){
+    let scaned = this.lexer.scan(this.source);
+    if (scaned != null){
+      let {token} = scaned;
+      if (token && token.getStr() == s){
+        console.log(`[MatchExcept Exit] ${token}`);
+        return false;
+      } else {
+        console.log(`[Accept] ${token}`);
+        this.source = scaned.sTo;
+        return true;
+      }
+    } else return false;
+  }
+
+  public KleeneCharacter(){
+    while (this.match_except("\n"));
     return true;
+  }
+
+  public LineBreak(){
+    return this.match_("\n", Token);
+  }
+
+  public Remark() : boolean {
+    return (this.match_("REM", Word)
+            && this.KleeneCharacter()
+            && this.LineBreak());
   }
 }

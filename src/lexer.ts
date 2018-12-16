@@ -11,7 +11,8 @@ export class Lexer {
   static readonly Special = /[@~`!@#$%^&*()=+\\';:"\/?>.<,-|]/;
   static readonly Word = new RegExp("^[a-zA-Z](\w|" + Lexer.Special.source + ")+");
   static readonly Character = Lexer.Letter + "|" + Lexer.Digit + "|" + Lexer.Special;
-  static readonly Whitespace = /^\s+/;
+  static readonly Whitespace = /^[ \f\r\t\v\u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]+/;
+  static readonly LineBreak = /\n/;
 
   private stripWhitespace= (s: string) => s.replace(Lexer.Whitespace,"");
 

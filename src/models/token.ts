@@ -1,4 +1,5 @@
 export interface IToken {
+  getStr() : string;
 }
 
 export class Token implements IToken {
@@ -11,6 +12,7 @@ export class Token implements IToken {
   public toString = () : string => {
     return `<Token,${this.value}>`;
   }
+  getStr = () => this.value;
 }
 
 
@@ -24,6 +26,8 @@ export class Word implements IToken {
   public toString = () : string => {
     return `<Word,${this.lexeme}>`;
   }
+
+  getStr = () => this.lexeme;
 
   static readonly _ge = new Word("GE");
   static readonly _le = new Word("LE");
@@ -44,4 +48,6 @@ export class Num implements IToken {
   }
 
   value: number;
+
+  getStr = () => this.value.toString();
 }
