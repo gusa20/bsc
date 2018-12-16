@@ -72,7 +72,7 @@ export class Parser {
   }
 
   public BStatement () : boolean{
-    return (this.Int() && this.Remark());
+    return (this.Int() && (this.Return() || this.Remark() || this.Gosub() || this.Data()));
     // if (! (this.Assign() || this.Read() || this.Data () || this.Print() || this.Goto() || this.If()
     //        || this.For() || this.Next() || this.Dim() || this.Def() || this.Gosub() || this.Return() || this.Remark())){
     //   throw new Error("Parsing failed at BSTatement");
@@ -146,8 +146,23 @@ export class Parser {
     return false;
   }
 
+  public KleeneCommaSNum(){
+    console.log("[Start] {, SNum}");
+    while(1){
+      let backup = this.source;
+      let r = this.match_(",", Token) && this.Int();
+      if (!r) {
+        console.log(`[Backtrack] {, SNum}`);
+        this.source = backup;
+        break;
+      }
+    };
+    console.log("[END] {, SNum}");
+    return true;
+  }
+
   public Data() : boolean {
-    return false;
+    return this.match_("DATA",Word) && this.Int() &&  this.KleeneCommaSNum();
   }
 
   public Print() : boolean {
@@ -179,11 +194,11 @@ export class Parser {
   }
 
   public Gosub() : boolean {
-    return false;
+    return this.match_("GOSUB",Word) && this.Int() && this.LineBreak();
   }
 
   public Return() : boolean {
-    return false;
+    return this.match_("RETURN",Word) && this.LineBreak();
   }
 
   public Special() : boolean {
