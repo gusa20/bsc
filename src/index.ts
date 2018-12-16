@@ -1,4 +1,5 @@
-import {Command, flags} from '@oclif/command'
+import {Command, flags} from '@oclif/command';
+import {Lexer} from './lexer'
 
 class Bsc extends Command {
   static description = 'describe the command here'
@@ -18,6 +19,9 @@ class Bsc extends Command {
   async run() {
     const {args, flags} = this.parse(Bsc)
 
+    const lexer = new Lexer();
+    var content = lexer.scan();
+    console.log(content);
     const name = flags.name || 'world'
     this.log(`hello ${name} from ./src/index.ts`)
     if (args.file && flags.force) {
