@@ -23,7 +23,7 @@ class Bsc extends Command {
     //parser.scanAll("resources/bubble-simple.b");
     parser.parse("resources/bubble-simple.b");
     const name = flags.name || 'world'
-    this.log(`hello ${name} from ./src/index.ts`)
+    //this.log(`hello ${name} from ./src/index.ts`)
     if (args.file && flags.force) {
       this.log(`you input --force and --file: ${args.file}`)
     }

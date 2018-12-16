@@ -35,10 +35,6 @@ export class Parser {
   private look : any;
   private source : any;
 
-  private match(x : any) : boolean{
-    return x;
-  }
-
   public KleeneBStatement(){
     console.log("[Start] {BStatement}");
     while(1){
@@ -61,7 +57,7 @@ export class Parser {
   public Program (){
     if (this.BStatement()){
       this.KleeneBStatement();
-      let r = (this.Int() && this.match_("END", Word) && this.EndOfFile());
+      let r = (this.Int() && this.match(Word, "END") && this.EndOfFile());
       if (r){
         console.log("[Production] Program -> BStatement {BStatement} int \"END\"");
         return true;
@@ -82,27 +78,19 @@ export class Parser {
   }
 
   public Assign() : boolean {
-    this.match("LET");
-    this.Var();
-    this.match("=");
-    this.Exp();
     return false;
   }
 
-  public KleeneExp(){
-    while (this.match(",") && this.Exp());
-    return true;
-  }
-
   public Var() : boolean {
-    if ((this.Letter() && this.Digit())
-        || (this.Letter()
-            && this.match("\(")
-            && this.Exp()
-            && this.KleeneExp())){
-      return true;
-    }
-    else return false;
+    // if ((this.Letter() && this.Digit())
+    //     || (this.Letter()
+    //         && this.match("\(")
+    //         && this.Exp()
+    //         && this.KleeneExp())){
+    //   return true;
+    // }
+    // else return false;
+    return false;
   }
 
   public Exp() : boolean {
@@ -110,17 +98,18 @@ export class Parser {
   }
 
   public SNum (){
-    if (this.match("+") && this.Num()) return true;
-    else if (this.match("-") && this.Num()){
-      return true;
-    }
-    else throw new Error("[Fail] SNum");
+    // if (this.match("+") && this.Num()) return true;
+    // else if (this.match("-") && this.Num()){
+    //   return true;
+    // }
+    // else throw new Error("[Fail] SNum");
+    return false;
   }
 
   public Num (){
-    this.Int();
-    this.match(".");
-    while (this.Digit()) continue;
+    // this.Int();
+    // this.match(".");
+    // while (this.Digit()) continue;
   }
 
   public Int() : boolean {
@@ -150,7 +139,7 @@ export class Parser {
     console.log("[Start] {, SNum}");
     while(1){
       let backup = this.source;
-      let r = this.match_(",", Token) && this.Int();
+      let r = this.match(Token, ",") && this.Int();
       if (!r) {
         console.log(`[Backtrack] {, SNum}`);
         this.source = backup;
@@ -161,8 +150,13 @@ export class Parser {
     return true;
   }
 
+  public hue (){
+    console.log("hue");
+    console.log(this.source);
+    return true;
+  }
   public Data() : boolean {
-    return this.match_("DATA",Word) && this.Int() &&  this.KleeneCommaSNum();
+    return this.match(Word, "DATA") && this.Int() && this.KleeneCommaSNum() && this.LineBreak();
   }
 
   public Print() : boolean {
@@ -182,6 +176,7 @@ export class Parser {
   }
 
   public Next() : boolean {
+    //this.match("NEXT", Word); this.match_()
     return false;
   }
 
@@ -194,11 +189,11 @@ export class Parser {
   }
 
   public Gosub() : boolean {
-    return this.match_("GOSUB",Word) && this.Int() && this.LineBreak();
+    return this.match(Word, "GOSUB") && this.Int() && this.LineBreak();
   }
 
   public Return() : boolean {
-    return this.match_("RETURN",Word) && this.LineBreak();
+    return this.match(Word, "RETURN") && this.LineBreak();
   }
 
   public Special() : boolean {
@@ -213,7 +208,7 @@ export class Parser {
     return this.Letter() || this.Digit() || this.Special();
   }
 
-  public match_(s : string, t : any){
+  public match(t : any, s : string){
     let scaned = this.lexer.scan(this.source);
     if (scaned != null){
       let {token} = scaned;
@@ -225,7 +220,7 @@ export class Parser {
     } else return false;
   }
 
-  public match_except(s : string){
+  public matchexcept(s : string){
     let scaned = this.lexer.scan(this.source);
     if (scaned != null){
       let {token} = scaned;
@@ -241,16 +236,16 @@ export class Parser {
   }
 
   public KleeneCharacter(){
-    while (this.match_except("\n"));
+    while (this.matchexcept("\n"));
     return true;
   }
 
   public LineBreak(){
-    return this.match_("\n", Token);
+    return this.match(Token, "\n");
   }
 
   public Remark() : boolean {
-    return (this.match_("REM", Word)
+    return (this.match(Word, "REM")
             && this.KleeneCharacter()
             && this.LineBreak());
   }

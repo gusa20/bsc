@@ -1,6 +1,6 @@
 {
-  "name": "bsc",
-  "description": "dartmouth basic simple compiler",
+  "name": "basic-simple-compiler",
+  "description": "Dartmouth basic simple compiler",
   "version": "0.0.0",
   "author": "Luiz Gustavo dos Santos @gusa20",
   "bin": {
@@ -45,7 +45,7 @@
   "oclif": {
     "bin": "bsc"
   },
-  "repository": "gusa20/bsc",
+  "repository": "gusa20/pcs3866-basic-compiler",
   "scripts": {
     "posttest": "tslint -p test -t stylish",
     "prepack": "rm -rf lib && tsc -b",
